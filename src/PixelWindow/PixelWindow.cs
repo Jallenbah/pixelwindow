@@ -31,6 +31,7 @@ namespace PixelWindow
 
         // Update function, for changing non-render data at a fixed rate independent of rendering (e.g. 50hz)
         private readonly Action<double> _fixedUpdate;
+        private readonly double _fixedTimestep;
 
         // Render function, for updating the pixel data
         private readonly Action<PixelData, double> _render;
@@ -64,8 +65,10 @@ namespace PixelWindow
         /// Render function, for updating the pixel data every frame.
         /// Recevies the pixel data to be written to, and the frametime in ms as parameters.
         /// </param>
+        /// <param name="framerateLimit">The actual screen pixel width of the window</param>
         public PixelWindow(uint width, uint height, uint pixelScale, string title,
-            Action<RenderWindow> onLoad, Action<double> update, Action<double> fixedUpdate, Action<PixelData, double> render)
+            Action<RenderWindow> onLoad, Action<double> update, Action<double> fixedUpdate, Action<PixelData, double> render,
+            double fixedTimestep = 20, uint framerateLimit = 300)
         {
             _width = width;
             _height = height;
@@ -78,19 +81,21 @@ namespace PixelWindow
             _fixedUpdate = fixedUpdate ?? ((dt) => { });
             _render = render ?? ((pd, ft) => { });
 
+            _fixedTimestep = fixedTimestep;
+
             _pixelData = new PixelData(_renderWidth, _renderHeight);
 
-            SetupSfmlWindow();
+            SetupSfmlWindow(framerateLimit);
         }
 
-        private void SetupSfmlWindow()
+        private void SetupSfmlWindow(uint framerateLimit)
         {
             _renderWindow = new RenderWindow(
                 new VideoMode(_width, _height),
                 _title,
                 Styles.Close);
 
-            _renderWindow.SetFramerateLimit(300);
+            _renderWindow.SetFramerateLimit(framerateLimit);
 
             _renderTexture = new RenderTexture(_renderWidth, _renderHeight);
             _renderTexture.Texture.Smooth = false; // As we are blowing up the size of the pixels, we need to do this so it doesn't end up blurring it
@@ -122,7 +127,6 @@ namespace PixelWindow
             debugInfoUpdateStopwatch.Start();
 
             double frameTimeAccumulatorMs = 0;
-            double fixedTimeStep = 20;
             var frameTimeStopwatch = new Stopwatch();
             frameTimeStopwatch.Start();
 
@@ -137,10 +141,10 @@ namespace PixelWindow
 
                 RunProcessAndAddToTotalTime(() => { _update(frameTime); }, ref perf_totalUpdateMs, performanceStopwatch);
 
-                while (frameTimeAccumulatorMs >= fixedTimeStep)
+                while (frameTimeAccumulatorMs >= _fixedTimestep)
                 {
-                    RunProcessAndAddToTotalTime( () => { _fixedUpdate(fixedTimeStep); }, ref perf_totalFixedUpdateMs, performanceStopwatch);
-                    frameTimeAccumulatorMs -= fixedTimeStep;
+                    RunProcessAndAddToTotalTime( () => { _fixedUpdate(_fixedTimestep); }, ref perf_totalFixedUpdateMs, performanceStopwatch);
+                    frameTimeAccumulatorMs -= _fixedTimestep;
                 }
 
                 RunProcessAndAddToTotalTime(Prerender, ref perf_totalPreRenderMs, performanceStopwatch);

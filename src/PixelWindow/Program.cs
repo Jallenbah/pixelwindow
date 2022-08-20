@@ -22,6 +22,6 @@ var window = new PixelWindow.PixelWindow(1024, 576, 8, "Big pixels",
                 pixelData[x, y] = ((byte)rand.Next(0, 255), (byte)rand.Next(0, 255), (byte)rand.Next(0, 255));
             }
         }
-    });
+    }, fixedTimestep: 20, framerateLimit: 300);
 
 window.Run();
