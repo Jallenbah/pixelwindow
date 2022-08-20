@@ -121,6 +121,7 @@ namespace PixelWindow
             double perf_totalUpdateMs = 0, perf_totalFixedUpdateMs = 0, perf_totalPreRenderMs = 0,
                    perf_totalRenderMs = 0, perf_totalPostRenderMs = 0;
             int perf_numberOfIterationsTimed = 0;
+            int perf_numberOfFixedTimestepIterationsTimed = 0;
 
             var performanceStopwatch = new Stopwatch();
             var debugInfoUpdateStopwatch = new Stopwatch();
@@ -144,6 +145,7 @@ namespace PixelWindow
                 while (frameTimeAccumulatorMs >= _fixedTimestep)
                 {
                     RunProcessAndAddToTotalTime( () => { _fixedUpdate(_fixedTimestep); }, ref perf_totalFixedUpdateMs, performanceStopwatch);
+                    perf_numberOfFixedTimestepIterationsTimed++;
                     frameTimeAccumulatorMs -= _fixedTimestep;
                 }
 
@@ -156,22 +158,23 @@ namespace PixelWindow
                 // Update title bar with debug info
                 if (debugInfoUpdateStopwatch.ElapsedMilliseconds >= titleDebugInfoFrequencyMs)
                 {
-                    double getAverageAndResetTime(ref double totalMs)
+                    double getAverageAndResetTime(ref double totalMs, int iterationCount)
                     {
-                        var averageMs = totalMs / perf_numberOfIterationsTimed;
+                        var averageMs = totalMs / iterationCount;
                         totalMs = 0;
                         return averageMs;
                     };
 
                     var newTitle = $"{_title} - " +
-                        $"Update: {       getAverageAndResetTime(ref perf_totalUpdateMs)      :0.0}ms | " +
-                        $"Fixed Update: { getAverageAndResetTime(ref perf_totalFixedUpdateMs) :0.0}ms | " +
-                        $"Prerender: {    getAverageAndResetTime(ref perf_totalPreRenderMs)   :0.0}ms | " +
-                        $"Render: {       getAverageAndResetTime(ref perf_totalRenderMs)      :0.0}ms | " +
-                        $"Postrender: {   getAverageAndResetTime(ref perf_totalPostRenderMs)  :0.0}ms";
+                        $"Update: {       getAverageAndResetTime(ref perf_totalUpdateMs, perf_numberOfIterationsTimed)                   :0.0}ms | " +
+                        $"Fixed Update: { getAverageAndResetTime(ref perf_totalFixedUpdateMs, perf_numberOfFixedTimestepIterationsTimed) :0.0}ms | " +
+                        $"Prerender: {    getAverageAndResetTime(ref perf_totalPreRenderMs, perf_numberOfIterationsTimed)                :0.0}ms | " +
+                        $"Render: {       getAverageAndResetTime(ref perf_totalRenderMs, perf_numberOfIterationsTimed)                   :0.0}ms | " +
+                        $"Postrender: {   getAverageAndResetTime(ref perf_totalPostRenderMs, perf_numberOfIterationsTimed)               :0.0}ms";
                     _renderWindow.SetTitle(newTitle);
 
                     perf_numberOfIterationsTimed = 0;
+                    perf_numberOfFixedTimestepIterationsTimed = 0;
                     debugInfoUpdateStopwatch.Restart();
                 }
             }
