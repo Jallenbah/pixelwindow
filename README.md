@@ -6,13 +6,13 @@ This framework allows you to render at magnified pixel sizes, for example, the f
 new PixelWindow(1024, 576, 8, "Big pixels", ...
 ```
 
-When you create the window, you specify a number of functions -
+When you create the window, you give an instance of a class overriding a simple interface ([IPixelWindowAppManager.cs](src/PixelWindowSystem/IPixelWindowAppManager.cs)) with functions for the following -
 * An onload function which gives you the SFML window so you can use it for input etc.
 * An update function which runs every frame
 * An update function which runs once per fixed timestep increment
 * A render function which runs every frame and gives you access to set direct pixel data
 
-A basic setup can be seen in [Program.cs](src/PixelWindow/Program.cs), which renders randomly coloured pixels at as high a framerate as it can up to the specified framerate limit. As seen in the window title (showing a total render time of 0.5ms), this is able to render at a couple of thousand frames per second, so the performance of the framework shouldn't hold back the performance of your rendering code on modern hardware.
+A basic setup can be seen in [Program.cs](src/App/Program.cs), which renders randomly coloured pixels at as high a framerate as it can up to the specified framerate limit. As seen in the window title (showing a total render time of 0.5ms), this is able to render at a couple of thousand frames per second, so the performance of the framework shouldn't hold back the performance of your rendering code on modern hardware.
 
 ![screenshot](doc/screenshot.png)
 
