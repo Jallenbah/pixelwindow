@@ -1,9 +1,9 @@
-﻿namespace PixelWindow
+﻿namespace PixelWindowSystem
 {
     /// <summary>
     /// Class representing RGB pixel data for reading and writing
     /// </summary>
-    internal class PixelData
+    public class PixelData
     {
         /// <summary>
         /// The width of the pixel grid

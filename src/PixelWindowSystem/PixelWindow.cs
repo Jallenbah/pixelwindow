@@ -3,12 +3,12 @@ using SFML.System;
 using SFML.Window;
 using System.Diagnostics;
 
-namespace PixelWindow
+namespace PixelWindowSystem
 {
     /// <summary>
     /// A window class which allows high speed rendering of direct pixel data to the screen, at either 1:1 pixel size, or enlarged pixels
     /// </summary>
-    internal class PixelWindow
+    public class PixelWindow
     {
         // Width and height of the window, and size of texture pixel in screen pixels (4 would be a 4x4 "pixel" - blown up 4x the size of screen pixels)
         private readonly uint _width, _height, _pixelScale;

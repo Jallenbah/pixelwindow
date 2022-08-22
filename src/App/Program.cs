@@ -1,6 +1,8 @@
-﻿var rand = new Random();
+﻿using PixelWindowSystem;
 
-var window = new PixelWindow.PixelWindow(1024, 576, 8, "Big pixels",
+var rand = new Random();
+
+var window = new PixelWindow(1024, 576, 8, "Big pixels",
     (renderWindow) => {
         // On load function - runs once at start.
         // The SFML render window provides ability to set up events and input (maybe store a reference to it for later use in your update functions)

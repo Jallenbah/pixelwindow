@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.3.32804.467
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PixelWindow", "PixelWindow\PixelWindow.csproj", "{EC3A68B3-3989-444E-8F1D-1703263C0A4E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "App", "App\App.csproj", "{EC3A68B3-3989-444E-8F1D-1703263C0A4E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PixelWindowSystem", "PixelWindowSystem\PixelWindowSystem.csproj", "{C2C702C4-2EC1-4554-9982-55F12884FE2C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{EC3A68B3-3989-444E-8F1D-1703263C0A4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EC3A68B3-3989-444E-8F1D-1703263C0A4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EC3A68B3-3989-444E-8F1D-1703263C0A4E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C2C702C4-2EC1-4554-9982-55F12884FE2C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C2C702C4-2EC1-4554-9982-55F12884FE2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C2C702C4-2EC1-4554-9982-55F12884FE2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C2C702C4-2EC1-4554-9982-55F12884FE2C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
