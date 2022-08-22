@@ -23,18 +23,11 @@ namespace PixelWindowSystem
         // Window title
         private readonly string _title;
 
-        // On load function, run once at the start, for setting up input events, loading data etc.
-        private readonly Action<RenderWindow> _onLoad;
+        // App manager, implementing our onload, update, fixed update, and render functions used within the Run method
+        private readonly IPixelWindowAppManager _appManager;
 
-        // Update function, for updating non-render data every frame (e.g. handling input)
-        private readonly Action<double> _update;
-
-        // Update function, for changing non-render data at a fixed rate independent of rendering (e.g. 50hz)
-        private readonly Action<double> _fixedUpdate;
+        // The fixed timestep in ms used for the fixed update
         private readonly double _fixedTimestep;
-
-        // Render function, for updating the pixel data
-        private readonly Action<PixelData, double> _render;
 
         // SFML objects. A render texture is used to blow up pixels to a larger size. That render texture is drawn using a sprite
         // which has been scaled to the size of the window.
@@ -66,8 +59,7 @@ namespace PixelWindowSystem
         /// Recevies the pixel data to be written to, and the frametime in ms as parameters.
         /// </param>
         /// <param name="framerateLimit">The actual screen pixel width of the window</param>
-        public PixelWindow(uint width, uint height, uint pixelScale, string title,
-            Action<RenderWindow> onLoad, Action<double> update, Action<double> fixedUpdate, Action<PixelData, double> render,
+        public PixelWindow(uint width, uint height, uint pixelScale, string title, IPixelWindowAppManager appManager,
             double fixedTimestep = 20, uint framerateLimit = 300)
         {
             _width = width;
@@ -76,10 +68,7 @@ namespace PixelWindowSystem
 
             _title = title ?? "Title";
 
-            _onLoad = onLoad ?? ((rw) => { });
-            _update = update ?? ((ft) => { });
-            _fixedUpdate = fixedUpdate ?? ((dt) => { });
-            _render = render ?? ((pd, ft) => { });
+            _appManager = appManager;
 
             _fixedTimestep = fixedTimestep;
 
@@ -107,7 +96,7 @@ namespace PixelWindowSystem
                 ((Window)sender!).Close();
             });
 
-            _onLoad(_renderWindow);
+            _appManager.OnLoad(_renderWindow);
         }
 
         /// <summary>
@@ -140,17 +129,17 @@ namespace PixelWindowSystem
 
                 _renderWindow.DispatchEvents();
 
-                RunProcessAndAddToTotalTime(() => { _update(frameTime); }, ref perf_totalUpdateMs, performanceStopwatch);
+                RunProcessAndAddToTotalTime(() => { _appManager.Update(frameTime); }, ref perf_totalUpdateMs, performanceStopwatch);
 
                 while (frameTimeAccumulatorMs >= _fixedTimestep)
                 {
-                    RunProcessAndAddToTotalTime( () => { _fixedUpdate(_fixedTimestep); }, ref perf_totalFixedUpdateMs, performanceStopwatch);
+                    RunProcessAndAddToTotalTime( () => { _appManager.FixedUpdate(_fixedTimestep); }, ref perf_totalFixedUpdateMs, performanceStopwatch);
                     perf_numberOfFixedTimestepIterationsTimed++;
                     frameTimeAccumulatorMs -= _fixedTimestep;
                 }
 
                 RunProcessAndAddToTotalTime(Prerender, ref perf_totalPreRenderMs, performanceStopwatch);
-                RunProcessAndAddToTotalTime(() => { _render(_pixelData, frameTime); }, ref perf_totalRenderMs, performanceStopwatch);
+                RunProcessAndAddToTotalTime(() => { _appManager.Render(_pixelData, frameTime); }, ref perf_totalRenderMs, performanceStopwatch);
                 RunProcessAndAddToTotalTime(Postrender, ref perf_totalPostRenderMs, performanceStopwatch);
 
                 perf_numberOfIterationsTimed++;
