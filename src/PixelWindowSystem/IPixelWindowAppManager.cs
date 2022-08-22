@@ -1,5 +1,9 @@
 ﻿namespace PixelWindowSystem
 {
+    /// <summary>
+    /// Interface to implement for controlling the <see cref="PixelWindow"/>.
+    /// An instance of a class implementing this interface must be passed into the constructor of <see cref="PixelWindow"/>.
+    /// </summary>
     public interface IPixelWindowAppManager
     {
         /// <summary>
