@@ -20,17 +20,17 @@ class RandomPixelsAppManager : IPixelWindowAppManager
         // The SFML render window provides ability to set up events and input (maybe store a reference to it for later use in your update functions)
     }
 
-    public void Update(double frameTime)
+    public void Update(float frameTime)
     {
         // Update function - process update logic to run every frame here
     }
 
-    public void FixedUpdate(double timeStep)
+    public void FixedUpdate(float timeStep)
     {
         // Fixed update function - process logic to run every fixed timestep here
     }
 
-    public void Render(PixelData pixelData, double frameTime)
+    public void Render(PixelData pixelData, float frameTime)
     {
         // Render function - set pixel data for the current frame here
         // Randomised pixels shown as example.

@@ -27,7 +27,7 @@ namespace PixelWindowSystem
         private readonly IPixelWindowAppManager _appManager;
 
         // The fixed timestep in ms used for the fixed update
-        private readonly double _fixedTimestep;
+        private readonly float _fixedTimestep;
 
         // SFML objects. A render texture is used to blow up pixels to a larger size. That render texture is drawn using a sprite
         // which has been scaled to the size of the window.
@@ -60,7 +60,7 @@ namespace PixelWindowSystem
         /// </param>
         /// <param name="framerateLimit">The actual screen pixel width of the window</param>
         public PixelWindow(uint width, uint height, uint pixelScale, string title, IPixelWindowAppManager appManager,
-            double fixedTimestep = 20, uint framerateLimit = 300)
+            float fixedTimestep = 20, uint framerateLimit = 300)
         {
             _width = width;
             _height = height;
@@ -123,7 +123,7 @@ namespace PixelWindowSystem
             // Main update loop
             while (_renderWindow!.IsOpen)
             {
-                var frameTime = frameTimeStopwatch.Elapsed.TotalMilliseconds;
+                var frameTime = (float)frameTimeStopwatch.Elapsed.TotalMilliseconds;
                 frameTimeAccumulatorMs += frameTime;
                 frameTimeStopwatch.Restart();
 
