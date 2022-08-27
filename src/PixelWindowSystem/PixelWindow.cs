@@ -31,9 +31,9 @@ namespace PixelWindowSystem
 
         // SFML objects. A render texture is used to blow up pixels to a larger size. That render texture is drawn using a sprite
         // which has been scaled to the size of the window.
-        private RenderWindow? _renderWindow { get; set; }
-        private RenderTexture? _renderTexture { get; set; }
-        private Sprite? _renderTextureSprite { get; set; }
+        private RenderWindow? _renderWindow;
+        private RenderTexture? _renderTexture;
+        private Sprite? _renderTextureSprite;
 
         /// <summary>
         /// Sets up and opens a new window with the specified parameters
@@ -42,22 +42,8 @@ namespace PixelWindowSystem
         /// <param name="height">The actual screen pixel height of the window</param>
         /// <param name="pixelScale">The size of each pixel. 1 would be a 1:1 scale of screen pixels to drawn pixels. 2 would be double sized pixels etc.</param>
         /// <param name="title">The window title. Performance debug data will be periodically appended to this also.</param>
-        /// <param name="onLoad">
-        /// On load function, run once at the start, for setting up input events, loading data etc.
-        /// Receives the SFML RenderWindow as a parameter (this has everything required to set up events and query input)
-        /// </param>
-        /// <param name="update">
-        /// Update function, for updating non-render data every frame (e.g. handling input).
-        /// Receives the frametime in ms as a parameter.
-        /// </param>
-        /// <param name="fixedUpdate">
-        /// Update function, for changing non-render data at a fixed rate independent of rendering (e.g. 50hz).
-        /// Receives the fixed timestep period in ms as a parameter.
-        /// </param>
-        /// <param name="render">
-        /// Render function, for updating the pixel data every frame.
-        /// Recevies the pixel data to be written to, and the frametime in ms as parameters.
-        /// </param>
+        /// <param name="appManager">An instance of <see cref="IPixelWindowAppManager"/> to control the application</param>
+        /// <param name="fixedTimestep">The fixed timestep between fixed updates, in ms</param>
         /// <param name="framerateLimit">The actual screen pixel width of the window</param>
         public PixelWindow(uint width, uint height, uint pixelScale, string title, IPixelWindowAppManager appManager,
             float fixedTimestep = 20, uint framerateLimit = 300)
@@ -131,11 +117,21 @@ namespace PixelWindowSystem
 
                 RunProcessAndAddToTotalTime(() => { _appManager.Update(frameTime); }, ref perf_totalUpdateMs, performanceStopwatch);
 
+                const byte maxFixedUpdatesInOneFrame = 10;
+                byte fixedUpdatesThisFrame = 0;
                 while (frameTimeAccumulatorMs >= _fixedTimestep)
                 {
                     RunProcessAndAddToTotalTime( () => { _appManager.FixedUpdate(_fixedTimestep); }, ref perf_totalFixedUpdateMs, performanceStopwatch);
                     perf_numberOfFixedTimestepIterationsTimed++;
                     frameTimeAccumulatorMs -= _fixedTimestep;
+
+                    fixedUpdatesThisFrame++;
+                    if (fixedUpdatesThisFrame >= maxFixedUpdatesInOneFrame)
+                    {
+                        // Avoid spiral of death where we accumulate more and more updates per frame if fixed
+                        // update is too slow to keep up with the set fixed timestep.
+                        break;
+                    }
                 }
 
                 RunProcessAndAddToTotalTime(Prerender, ref perf_totalPreRenderMs, performanceStopwatch);
