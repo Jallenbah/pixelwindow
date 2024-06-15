@@ -189,8 +189,7 @@ namespace PixelWindowSystem
         private void Postrender()
         {
             _renderTexture!.Texture.Update(_pixelData.RawData);
-            _renderWindow!.Clear();
-            _renderWindow.Draw(_renderTextureSprite);
+            _renderWindow!.Draw(_renderTextureSprite);
             _renderWindow.Display();
         }
     }

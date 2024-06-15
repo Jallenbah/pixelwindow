@@ -22,7 +22,7 @@
         /// <summary>
         /// Fixed update function, for changing non-render data at a fixed rate independent of rendering (e.g. 50hz)
         /// </summary>
-        /// <param name="timeStep"
+        /// <param name="timeStep">
         /// The fixed timestep configured on the <see cref="PixelWindow"/> in ms. This can and
         /// should be used as the deltatime value for any physics calculations for example.
         /// </param>
