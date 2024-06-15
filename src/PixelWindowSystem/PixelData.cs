@@ -3,38 +3,33 @@
     /// <summary>
     /// Class representing RGB pixel data for reading and writing
     /// </summary>
-    public class PixelData
+    /// <remarks>
+    /// Only the <see cref="PixelWindow"/> should need to instantiate this class.
+    /// </remarks>
+    /// <param name="width">The width of the pixel grid</param>
+    /// <param name="height">The height of the pixel grid</param>
+    public class PixelData(uint width, uint height)
     {
+        private const int _bytesPerPixel = 4; // 4 bytes per pixel (R, G, B, A)
+
         /// <summary>
         /// The width of the pixel grid
         /// </summary>
-        public uint Width { get; private set; }
+        public uint Width { get; private set; } = width;
 
         /// <summary>
         /// The height of the pixel grid
         /// </summary>
-        public uint Height { get; private set; }
+        public uint Height { get; private set; } = height;
 
         /// <summary>
         /// Raw RGBA data. The alpha component is not used, except for being set to 255 for full opacity.
         /// This object is used for rendering with SFML by updating render texture data.
         /// </summary>
-        public byte[] RawData { get; private set; }
-
-        /// <summary>
-        /// Creates a new pixel data instance. Only the <see cref="PixelWindow"/> should need to do this.
-        /// </summary>
-        /// <param name="width">The width of the pixel grid</param>
-        /// <param name="height">The height of the pixel grid</param>
-        public PixelData(uint width, uint height)
-        {
-            Width = width;
-            Height = height;
-            RawData = new byte[4 * width * height]; // 4 bytes per pixel (R, G, B, A)
-        }
+        public byte[] RawData { get; private set; } = new byte[_bytesPerPixel * width * height];
 
         // For a given X and Y coordinate, gets the index of the 1 dimensional array.
-        private uint GetIndexFromXY(uint x, uint y) => 4 * ((y * Width) + x);
+        private uint GetIndexFromXY(uint x, uint y) => _bytesPerPixel * ((y * Width) + x);
 
         /// <summary>
         /// Gets or sets the pixel data at the specified coordinates
