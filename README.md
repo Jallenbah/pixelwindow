@@ -12,7 +12,7 @@ When you create the window, you give an instance of a class overriding a simple 
 * An update function which runs once per fixed timestep increment
 * A render function which runs every frame and gives you access to set direct pixel data
 
-A basic setup can be seen in [Program.cs](src/App/Program.cs), which renders randomly coloured pixels at as high a framerate as it can up to the specified framerate limit. As seen in the window title (showing a total render time of 0.5ms), this is able to render at a couple of thousand frames per second, so the performance of the framework shouldn't hold back the performance of your rendering code on modern hardware.
+A basic setup can be seen in [Program.cs](src/App/Program.cs), which renders randomly coloured pixels at as high a framerate as it can up to the specified framerate limit. As seen in the window title (showing a total render time of 0.25ms), this is able to render at about 4000 frames per second, so the performance of the framework shouldn't hold back the performance of your rendering code on modern hardware.
 
 ![screenshot](doc/screenshot.png)
 
