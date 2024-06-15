@@ -4,7 +4,7 @@ using SFML.Graphics;
 var appManager = new RandomPixelsAppManager();
 
 var window = new PixelWindow(1024, 576, 8, "Big pixels", appManager,
-    fixedTimestep: 20, framerateLimit: 300);
+    fixedTimestep: 20, framerateLimit: 300, showPerformanceMetricsInTitleBar: true);
 
 window.Run();
 
@@ -34,7 +34,6 @@ class RandomPixelsAppManager : IPixelWindowAppManager
     {
         // Render function - set pixel data for the current frame here
         // Randomised pixels shown as example.
-        pixelData.Clear();
         for (uint x = 0; x < pixelData.Width; x++)
         {
             for (uint y = 0; y < pixelData.Height; y++)

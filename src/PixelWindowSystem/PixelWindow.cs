@@ -29,6 +29,9 @@ namespace PixelWindowSystem
         // The fixed timestep in ms used for the fixed update
         private readonly float _fixedTimestep;
 
+        // Whether to show timing information around parts of the render loop in the title bar
+        private readonly bool _showPerformanceMetricsInTitleBar;
+
         // SFML objects. A render texture is used to blow up pixels to a larger size. That render texture is drawn using a sprite
         // which has been scaled to the size of the window.
         private RenderWindow? _renderWindow;
@@ -45,14 +48,16 @@ namespace PixelWindowSystem
         /// <param name="appManager">An instance of <see cref="IPixelWindowAppManager"/> to control the application</param>
         /// <param name="fixedTimestep">The fixed timestep between fixed updates, in ms</param>
         /// <param name="framerateLimit">The actual screen pixel width of the window</param>
+        /// <param name="showPerformanceMetricsInTitleBar">Whether to show frame time information in the title bar</param>
         public PixelWindow(uint width, uint height, uint pixelScale, string title, IPixelWindowAppManager appManager,
-            float fixedTimestep = 20, uint framerateLimit = 300)
+            float fixedTimestep = 20, uint framerateLimit = 300, bool showPerformanceMetricsInTitleBar = false)
         {
             _width = width;
             _height = height;
             _pixelScale = pixelScale;
 
             _title = title ?? "Title";
+            _showPerformanceMetricsInTitleBar = showPerformanceMetricsInTitleBar;
 
             _appManager = appManager;
 
@@ -95,8 +100,7 @@ namespace PixelWindowSystem
 
             double perf_totalUpdateMs = 0, perf_totalFixedUpdateMs = 0, perf_totalPreRenderMs = 0,
                    perf_totalRenderMs = 0, perf_totalPostRenderMs = 0;
-            int perf_numberOfIterationsTimed = 0;
-            int perf_numberOfFixedTimestepIterationsTimed = 0;
+            int perf_numberOfIterationsTimed = 0, perf_numberOfFixedTimestepIterationsTimed = 0;
 
             var performanceStopwatch = new Stopwatch();
             var debugInfoUpdateStopwatch = new Stopwatch();
@@ -150,13 +154,16 @@ namespace PixelWindowSystem
                         return averageMs;
                     };
 
-                    var newTitle = $"{_title} - " +
-                        $"Update: {       getAverageAndResetTime(ref perf_totalUpdateMs, perf_numberOfIterationsTimed)                   :0.0}ms | " +
-                        $"Fixed Update: { getAverageAndResetTime(ref perf_totalFixedUpdateMs, perf_numberOfFixedTimestepIterationsTimed) :0.0}ms | " +
-                        $"Prerender: {    getAverageAndResetTime(ref perf_totalPreRenderMs, perf_numberOfIterationsTimed)                :0.0}ms | " +
-                        $"Render: {       getAverageAndResetTime(ref perf_totalRenderMs, perf_numberOfIterationsTimed)                   :0.0}ms | " +
-                        $"Postrender: {   getAverageAndResetTime(ref perf_totalPostRenderMs, perf_numberOfIterationsTimed)               :0.0}ms";
-                    _renderWindow.SetTitle(newTitle);
+                    if (_showPerformanceMetricsInTitleBar)
+                    {
+                        var newTitle = $"{_title} - " +
+                        $"Update: {getAverageAndResetTime(ref perf_totalUpdateMs, perf_numberOfIterationsTimed):0.00}ms | " +
+                        $"Fixed Update: {getAverageAndResetTime(ref perf_totalFixedUpdateMs, perf_numberOfFixedTimestepIterationsTimed):0.00}ms | " +
+                        $"Prerender: {getAverageAndResetTime(ref perf_totalPreRenderMs, perf_numberOfIterationsTimed):0.00}ms | " +
+                        $"Render: {getAverageAndResetTime(ref perf_totalRenderMs, perf_numberOfIterationsTimed):0.00}ms | " +
+                        $"Postrender: {getAverageAndResetTime(ref perf_totalPostRenderMs, perf_numberOfIterationsTimed):0.00}ms";
+                        _renderWindow.SetTitle(newTitle);
+                    }
 
                     perf_numberOfIterationsTimed = 0;
                     perf_numberOfFixedTimestepIterationsTimed = 0;
